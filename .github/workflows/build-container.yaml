@@ -52,9 +52,11 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-#    - name: Push Docker image
-#      run: |
-#        docker tag ${{ github.event.inputs.target }}:latest ghcr.io/libcxx/${{ github.event.inputs.target }}:<tag>
-#        docker push ghcr.io/libcxx/${{ github.event.inputs.target }}:<tag>
+    - name: Push Docker image
+      if: ${{ github.event.inputs.dry_run }} == 'false'
+      run: |
+        docker compose push ${{ github.event.inputs.target }}
+      env:
+        TAG: ${{ github.event.inputs.tag }}
 
 
