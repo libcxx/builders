@@ -10,16 +10,22 @@ on:
         default: 'main'
       target:
         description: 'Target for Docker build'
-        required: false
-        default: 'actions-builder'
+        type: choice
+        options:
+          - 'actions-builder'
+          - 'buildkite-builder'
+          - 'android-buildkite-builder'
       tag:
         description: 'Tag for Docker image'
         required: false
-        default: 'example'
+        default: 'testing'
       dry_run:
         description: 'Dry run'
         required: false
-        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build-and-push:
@@ -39,6 +45,7 @@ jobs:
         TAG: ${{ github.event.inputs.image }}
 
     - name: Log in to GitHub Container Registry
+      if: ${{ github.event.inputs.dry_run }} == 'false'
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
