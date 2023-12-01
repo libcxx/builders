@@ -12,7 +12,7 @@ on:
         description: 'Target for Docker build'
         required: true
       new_tag:
-        description: 'Dry run'
+        description: 'The new tag'
         required: true
 
 jobs:
