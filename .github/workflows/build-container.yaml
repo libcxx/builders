@@ -58,5 +58,6 @@ jobs:
         docker compose push ${{ github.event.inputs.target }}
       env:
         TAG: ${{ github.event.inputs.tag }}
+      working-directory: libcxx/utils/ci
 
 
