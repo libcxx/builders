@@ -1,0 +1,52 @@
+
+name: Build and Push Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      llvm_ref:
+        description: 'LLVM reference to check out'
+        required: false
+        default: 'main'
+      target:
+        description: 'Target for Docker build'
+        required: false
+        default: 'actions-builder'
+      image:
+        description: 'Tag for Docker image'
+        required: false
+        default: 'ghcr.io/libcxx/actions-builder:example-test'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout llvm-project
+      uses: actions/checkout@v4
+      with:
+        repository: llvm/llvm-project
+        ref: ${{ github.event.inputs.llvm_ref }}
+
+    - name: Look at
+      run: ls -la
+
+    - name: Build Docker image
+      working-directory: libcxx/utils/ci
+      run: docker compose build --pull ${{ github.event.inputs.target }}
+      env:
+        TAG: ${{ github.event.inputs.image }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+#    - name: Push Docker image
+#      run: |
+#        docker tag ${{ github.event.inputs.target }}:latest ghcr.io/libcxx/${{ github.event.inputs.target }}:<tag>
+#        docker push ghcr.io/libcxx/${{ github.event.inputs.target }}:<tag>
+
+
