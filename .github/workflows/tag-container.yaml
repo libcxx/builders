@@ -1,0 +1,40 @@
+
+name: Tag a docker image
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'The image to retag'
+        required: false
+        default: 'ghcr.io/libcxx/actions-builder'
+      tag:
+        description: 'Target for Docker build'
+        required: true
+      new_tag:
+        description: 'Dry run'
+        required: true
+
+jobs:
+  tag-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Build Docker image
+      run: docker pull ${{ github.event.inputs.source }}:${{ github.event.inputs.tag }}
+
+    - name: Retag the image
+      run: docker tag ${{ github.event.inputs.source }} ghcr.io/libcxx/${{ github.event.inputs.source }}:${{ github.event.inputs.new_tag }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/libcxx/${{ github.event.inputs.source }}:${{ github.event.inputs.new_tag }}
+
+
