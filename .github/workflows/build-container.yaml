@@ -12,10 +12,10 @@ on:
         description: 'Target for Docker build'
         required: false
         default: 'actions-builder'
-      image:
+      tag:
         description: 'Tag for Docker image'
         required: false
-        default: 'ghcr.io/libcxx/actions-builder:example-test'
+        default: 'example'
 
 jobs:
   build-and-push:
