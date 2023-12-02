@@ -42,7 +42,7 @@ jobs:
       working-directory: libcxx/utils/ci
       run: docker compose build --pull ${{ github.event.inputs.target }}
       env:
-        TAG: ${{ github.event.inputs.image }}
+        TAG: ${{ github.event.inputs.tag }}
 
     - name: Log in to GitHub Container Registry
       if: ${{ github.event.inputs.dry_run }} == 'false'
