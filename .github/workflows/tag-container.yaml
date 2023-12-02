@@ -1,6 +1,10 @@
 
 name: Tag a docker image
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   workflow_dispatch:
     inputs:
