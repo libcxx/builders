@@ -10,13 +10,15 @@ on:
     inputs:
       image:
         description: 'The image to retag'
-        required: false
-        default: 'ghcr.io/libcxx/actions-builder'
+        type: choice
+        options:
+          - 'actions-builder'
+        default: 'actions-builder'
       source_tag:
-        description: 'The source tag for the image'
+        description: 'The source tag to retag'
         required: true
       new_tag:
-        description: 'The new tag'
+        description: 'The new tag. Use "live" to deploy to production.'
         required: true
 
 jobs:
@@ -25,12 +27,12 @@ jobs:
 
     steps:
     - name: Pull image
-      run: docker pull ${{ github.event.inputs.image }}:${{ github.event.inputs.source_tag }}
+      run: docker pull ghcr.io/libcxx/${{ github.event.inputs.image }}:${{ github.event.inputs.source_tag }}
 
     - name: Retag image
       run: |-
-        docker tag ${{ github.event.inputs.image }}:${{ github.event.inputs.source_tag }} \
-          ghcr.io/libcxx/${{ github.event.inputs.image }}:${{ github.event.inputs.new_tag }}
+        docker tag ghcr.io/libcxx/${{ github.event.inputs.image }}:${{ github.event.inputs.source_tag }} \
+                   ghcr.io/libcxx/${{ github.event.inputs.image }}:${{ github.event.inputs.new_tag }}
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
