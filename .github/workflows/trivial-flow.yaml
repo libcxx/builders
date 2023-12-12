@@ -17,7 +17,7 @@ on:
         description: 'An error message'
         type: string
         required: false
-        default: ""
+        default:
       exit_code:
         description: 'An exit code'
         type: number
