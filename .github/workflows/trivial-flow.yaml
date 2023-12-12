@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - name: Create Error
-      if: ${{ github.event.inputs.error != "" }}
+      if: ${{ github.event.inputs.error  }}
       run: echo "::error::${{ github.event.inputs.error }}"
 
     - name: Echo message
