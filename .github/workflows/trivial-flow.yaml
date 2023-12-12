@@ -31,7 +31,7 @@ jobs:
     steps:
     - name: Create Error
       if: ${{ github.event.inputs.error  }}
-      run: echo "::error::${{ github.event.inputs.error }}"
+      run: echo "::error::${{ github.event.inputs.error }}" && exit 1
 
     - name: Echo message
       run: echo "${{ github.event.inputs.message }}" && exit ${{ github.event.inputs.exit_code }}
