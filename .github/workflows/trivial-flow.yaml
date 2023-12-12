@@ -11,7 +11,8 @@ on:
       message:
         description: 'An input string'
         type: string
-        required: true
+        required: false
+        default: "Hello world!"
       exit_code:
         description: 'An exit code'
         type: number
@@ -24,8 +25,6 @@ jobs:
 
     steps:
     - name: Echo message
-      run: echo "${{ github.event.inputs.message }}"
-    - name: Exit with code
-      run: exit ${{ github.event.inputs.exit_code }}
+      run: echo "${{ github.event.inputs.message }}" && exit ${{ github.event.inputs.exit_code }}
 
 
