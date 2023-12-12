@@ -1,0 +1,31 @@
+
+name: A trivial workflow
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'An input string'
+        type: string
+        required: true
+      exit_code:
+        description: 'An exit code'
+        type: number
+        required: false
+        default: 0
+
+jobs:
+  tag-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Echo message
+      run: echo "${{ github.event.inputs.message }}"
+    - name: Exit with code
+      run: exit ${{ github.event.inputs.exit_code }}
+
+
