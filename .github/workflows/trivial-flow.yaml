@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: "Hello world!"
+      error:
+        description: 'An error message'
+        type: string
+        required: false
+        default: ""
       exit_code:
         description: 'An exit code'
         type: number
@@ -24,6 +29,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Create Error
+      if: ${{ github.event.inputs.error != "" }}
+      run: echo "::error::${{ github.event.inputs.error }}"
+
     - name: Echo message
       run: echo "${{ github.event.inputs.message }}" && exit ${{ github.event.inputs.exit_code }}
 
