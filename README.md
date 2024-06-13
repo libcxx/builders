@@ -24,3 +24,15 @@ The parameters include:
 - **new_tag**: The new tag for the Docker image.
 
 In order to make any changes to the Docker images, you will need to be logged into the GitHub Container Registry. The login process is included in the workflows.
+
+## Deploying images to the clusters
+
+The self-hosted builders run across multiple clusters. The currently running clusters are
+
+* rizzo
+* fozzie
+* animal
+
+Each cluster uses a different image tag, each of the form `<cluster>-live`. To deploy a new image to a specific cluster use the `Tag Image` workflow to tag an pre-built image with `<cluster>-live`. This should be done one at a time to canary changes without disrupting the other clusters.
+
+Each cluster needs to be updated individually.
