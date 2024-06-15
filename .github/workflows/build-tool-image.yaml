@@ -61,7 +61,7 @@ jobs:
       run: |
         name=$(echo $TOOL_ID | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
         version=$(echo $TOOL_ID | cut -d' ' -f2)
-        random_id=($head -c 10 /dev/random | shasum | head -c 6)
+        random_id=$(head -c 10 /dev/random | shasum | head -c 6)
         echo "Using final tag $name-$version-$(date -I)"
         echo "image_tag=$name-$version-$(date -I)" >> "$GITHUB_OUTPUT"
     - name: Build Docker image
