@@ -48,12 +48,11 @@ jobs:
         path: builders/
     - name: extract_image_tag
       id: extract_image_tag
-      with:
-        tool_id: ${{ github.event.inputs.tool_id }}
+      env:
+        TOOL_ID: ${{ github.event.inputs.tool_id }}
       run: |
-        string="tools/ninja 1.11"
-        name=$(echo $tool_id | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
-        version=$(echo $string | cut -d' ' -f2)
+        name=$(echo $TOOL_ID | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
+        version=$(echo $TOOL_ID | cut -d' ' -f2)
         echo "Using final tag $name-$version"
         echo "image_tag=$name-$version" >> "$GITHUB_OUTPUT"
         echo "image_id=ghcr.io/libcxx/tools:$name-$version" >> "$GITHUB_OUTPUT"
