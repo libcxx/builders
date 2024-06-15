@@ -42,7 +42,7 @@ jobs:
         repository: llvm/llvm-project
         ref: ${{ github.event.inputs.llvm_ref }}
         path: llvm-project
-    - name:
+    - name: Checkout builder source
       uses: actions/checkout@v4
       with:
         path: builders/
