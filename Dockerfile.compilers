@@ -48,7 +48,7 @@ mkdir /opt/libcxx-infra
 if [[ "\$NIGHTLY" == "true" ]]; then
     ARGS+=("--enable" "nightly")
 elif [[ "\$NIGHTLY" == "false" ]]; then
-    pass
+    echo "Not nightly"
 else
     echo "NIGHTLY must be either 'true' or 'false'"
     exit 1
