@@ -16,10 +16,6 @@ on:
         description: 'The tool string used to identify the tool by compiler explorer infra. For example "tools/ninja 1.11.1" or "compilers/c++/clang 13.0.0"'
         required: true
         type: string
-      tag_suffix:
-        description: 'Tag suffix for Docker image'
-        required: false
-        default: ''
       enable_nightly:
         description: 'Enable nightly builds'
         required: false
@@ -52,6 +48,11 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: builders/
+    # Create a "date" stamp for the output file
+    - name: Create output file
+      run: |
+        echo "image_tag=" > "$GITHUB_OUTPUT"
+        echo "image_id=" >> "$GITHUB_OUTPUT"
     - name: Extract image tag
       id: extract_image_tag
       env:
@@ -60,9 +61,9 @@ jobs:
       run: |
         name=$(echo $TOOL_ID | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
         version=$(echo $TOOL_ID | cut -d' ' -f2)
-        echo "Using final tag $name-$version$TAG_SUFFIX"
-        echo "image_tag=$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
-        echo "image_id=ghcr.io/libcxx/tools:$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
+        random_id=($head -c 10 /dev/random | shasum | head -c 6)
+        echo "Using final tag $name-$version-$(date -I)"
+        echo "image_tag=$name-$version-$(date -I)" >> "$GITHUB_OUTPUT"
     - name: Build Docker image
       working-directory: builders/
       run: |
