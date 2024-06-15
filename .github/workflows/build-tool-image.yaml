@@ -26,7 +26,8 @@ on:
         default: 'false'
       dry_run:
         description: 'Dry run'
-        required: true
+        required: false
+        default: 'false'
         type: choice
         options:
           - 'true'
