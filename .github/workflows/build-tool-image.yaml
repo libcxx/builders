@@ -42,6 +42,8 @@ jobs:
         repository: llvm/llvm-project
         ref: ${{ github.event.inputs.llvm_ref }}
         path: llvm-project
+        sparse-checkout: |
+          libcxx/utils/ci/
     - name: Checkout builder source
       uses: actions/checkout@v4
       with:
@@ -58,11 +60,11 @@ jobs:
         echo "image_id=ghcr.io/libcxx/tools:$name-$version" >> "$GITHUB_OUTPUT"
     - name: Build Docker image
       working-directory: builders/
-      run: |
-        docker build -f Dockerfile.compilers  . \
-        --build-arg TOOL_ID=${{ github.event.inputs.tool_id }} \
-        --build-arg NIGHTLY=${{ github.event.inputs.enable_nightly }} \
-        -t ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
+      run: >
+        docker build -f Dockerfile.compilers  . 
+          --build-arg TOOL_ID=${{ github.event.inputs.tool_id }}
+          --build-arg NIGHTLY=${{ github.event.inputs.enable_nightly }}
+          -t ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
       env:
         TAG: ${{ github.event.inputs.tag }}
 
