@@ -60,7 +60,7 @@ jobs:
       run: |
         name=$(echo $TOOL_ID | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
         version=$(echo $TOOL_ID | cut -d' ' -f2)
-        echo "Using final tag $name-$version"
+        echo "Using final tag $name-$version$TAG_SUFFIX"
         echo "image_tag=$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
         echo "image_id=ghcr.io/libcxx/tools:$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
     - name: Build Docker image
@@ -81,7 +81,7 @@ jobs:
     - name: Push Docker image
       if: ${{ github.event.inputs.dry_run == 'false' }}
       run: |
-        docker compose push ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
+        docker push ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
       env:
         TAG: ${{ github.event.inputs.tag }}
       working-directory: builders/
