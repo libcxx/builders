@@ -1,0 +1,83 @@
+
+name: Build a tool image container containing a single tool or toolchain.
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      llvm_ref:
+        description: 'LLVM reference to check out'
+        required: false
+        default: 'main'
+      tool_id:
+        description: 'The tool string used to identify the tool by compiler explorer infra. For example "tools/ninja 1.11.1" or "compilers/c++/clang 13.0.0"'
+        required: true
+        type: string
+      enable_nightly:
+        description: 'Enable nightly builds'
+        required: false
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+        default: 'false'
+      dry_run:
+        description: 'Dry run'
+        required: false
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout llvm-project
+      uses: actions/checkout@v4
+      with:
+        repository: llvm/llvm-project
+        ref: ${{ github.event.inputs.llvm_ref }}
+        path: llvm-project
+    - name:
+      uses: actions/checkout@v4
+      with:
+        path: builders/
+    - name: extract_image_tag
+      id: extract_image_tag
+      with:
+        tool_id: ${{ github.event.inputs.tool_id }}
+      run: |
+        string="tools/ninja 1.11"
+        name=$(echo $tool_id | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
+        version=$(echo $string | cut -d' ' -f2)
+        echo "Using final tag $name-$version"
+        echo "image_tag=$name-$version" >> "$GITHUB_OUTPUT"
+        echo "image_id=ghcr.io/libcxx/tools:$name-$version" >> "$GITHUB_OUTPUT"
+    - name: Build Docker image
+      working-directory: builders/
+      run: |
+        docker build -f Dockerfile.compilers . -t ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
+      env:
+        TAG: ${{ github.event.inputs.tag }}
+
+    - name: Log in to GitHub Container Registry
+      if: ${{ github.event.inputs.dry_run }} == 'false'
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push Docker image
+      if: ${{ github.event.inputs.dry_run }} == 'false'
+      run: |
+        docker compose push ${{ github.event.inputs.target }}
+      env:
+        TAG: ${{ github.event.inputs.tag }}
+      working-directory: builders/
+
+
