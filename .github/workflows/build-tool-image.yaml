@@ -16,6 +16,10 @@ on:
         description: 'The tool string used to identify the tool by compiler explorer infra. For example "tools/ninja 1.11.1" or "compilers/c++/clang 13.0.0"'
         required: true
         type: string
+      tag_suffix:
+        description: 'Tag suffix for Docker image'
+        required: false
+        default: ''
       enable_nightly:
         description: 'Enable nightly builds'
         required: false
@@ -52,12 +56,13 @@ jobs:
       id: extract_image_tag
       env:
         TOOL_ID: ${{ github.event.inputs.tool_id }}
+        TAG_SUFFIX: ${{ github.event.inputs.tag_suffix }}
       run: |
         name=$(echo $TOOL_ID | cut -d' ' -f1 | rev | cut -d'/' -f1 | rev)
         version=$(echo $TOOL_ID | cut -d' ' -f2)
         echo "Using final tag $name-$version"
-        echo "image_tag=$name-$version" >> "$GITHUB_OUTPUT"
-        echo "image_id=ghcr.io/libcxx/tools:$name-$version" >> "$GITHUB_OUTPUT"
+        echo "image_tag=$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
+        echo "image_id=ghcr.io/libcxx/tools:$name-$version$TAG_SUFFIX" >> "$GITHUB_OUTPUT"
     - name: Build Docker image
       working-directory: builders/
       run: |
@@ -74,9 +79,9 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Push Docker image
-      if: ${{ github.event.inputs.dry_run }} == 'false'
+      if: ${{ github.event.inputs.dry_run == 'false' }}
       run: |
-        docker compose push ${{ github.event.inputs.target }}
+        docker compose push ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
       env:
         TAG: ${{ github.event.inputs.tag }}
       working-directory: builders/
