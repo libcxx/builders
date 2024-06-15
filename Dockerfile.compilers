@@ -37,9 +37,6 @@ COPY <<EOF /usr/bin/installer
 set -ex
 set -o pipefail
 
-if [[ \$# == 0 ]]; then
-   exit 1
-fi
 
 ARGS=()
 
