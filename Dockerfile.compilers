@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     uuid-dev \
     wget \
     unzip \
+    xz-utils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth=1 https://github.com/compiler-explorer/infra.git infra \
