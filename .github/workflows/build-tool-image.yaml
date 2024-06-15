@@ -59,7 +59,10 @@ jobs:
     - name: Build Docker image
       working-directory: builders/
       run: |
-        docker build -f Dockerfile.compilers . -t ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
+        docker build -f Dockerfile.compilers  . \
+        --build-arg TOOL_ID=${{ github.event.inputs.tool_id }} \
+        --build-arg NIGHTLY=${{ github.event.inputs.enable_nightly }} \
+        -t ghcr.io/libcxx/tools:${{ steps.extract_image_tag.outputs.image_tag }}
       env:
         TAG: ${{ github.event.inputs.tag }}
 

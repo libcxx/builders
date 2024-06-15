@@ -42,28 +42,27 @@ if [[ \$# == 0 ]]; then
 fi
 
 ARGS=()
-while [[ \$# -gt 0 ]]; do
-    case \${1} in
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        --nightly)
-            ARGS+=("--enable" "nightly")
-            shift;
-            ;;
-        *)
-            break
-            ;;
-    esac
-done
 
 . /infra/.venv/bin/activate
 
 mkdir /tmp/staging
 mkdir /opt/libcxx-infra
 
-/infra/bin/ce_install --staging-dir /tmp/staging --dest /opt/libcxx-infra "\${ARGS[@]}" install "\${@}"
+if [[ "\$NIGHTLY" == "true" ]]; then
+    ARGS+=("--enable" "nightly")
+elif [[ "\$NIGHTLY" == "false" ]]; then
+    pass
+else; then
+    echo "NIGHTLY must be either 'true' or 'false'"
+    exit 1
+fi
+
+if [[ -z "\$TOOL_ID" ]]; then
+    echo "TOOL_ID must be set"
+    exit 1
+fi
+
+/infra/bin/ce_install --staging-dir /tmp/staging --dest /opt/libcxx-infra "\${ARGS[@]}" install "\$TOOL_ID"
 
 rm -rf /tmp/staging
 EOF
@@ -73,14 +72,14 @@ RUN chmod +x /usr/bin/installer
 FROM tool-installer AS install-tool
 
 
-ARG TOOL
-ENV TOOL=${TOOL}
+ARG TOOL_ID
+ENV TOOL_ID=${TOOL_ID}
 
-ARG FLAGS=""
-ENV FLAGS=${FLAGS}
+ARG NIGHTLY=false
+ENV NIGHTLY=${NIGHTLY}
 
 
-RUN /usr/bin/installer $FLAGS "$TOOL"
+RUN /usr/bin/installer
 
 # Use alpine as the base for the minimal final image. The image should only contain the tool, and will be copied into
 # other images that will eventually use it.
