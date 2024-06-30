@@ -44,7 +44,7 @@ jobs:
 
     - name: Build Docker image
       working-directory: libcxx/utils/ci
-      run: docker compose build --pull ${{ github.event.inputs.target }}
+      run: docker compose build ${{ github.event.inputs.target }}
       env:
         TAG: ${{ github.event.inputs.tag }}
 
@@ -63,5 +63,3 @@ jobs:
       env:
         TAG: ${{ github.event.inputs.tag }}
       working-directory: libcxx/utils/ci
-
-
